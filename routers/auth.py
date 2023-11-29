@@ -30,7 +30,7 @@ SECRET_KEY = "MOCK" #random string, anything
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60
 REFRESH_TOKEN_EXPIRE_MINUTES = 24 * 60 * 5
-#ADMIN_PASSWORD_PROOF = config.get_config("admin_access_proof")
+ADMIN_PASSWORD_PROOF = "TEMPADMIN"
 
 class CreateUser(BaseModel):
 	username: str = Field(min_length=4)
@@ -60,7 +60,7 @@ class CreateAdmin(BaseModel):
 				'username': 'test',
 				'email': 'test@email.com',
 				'password': 'test',
-				'admin_verify_password': 'some_access_proof'
+				'admin_verify_password': 'TEMPADMIN'
 			}
 		}
 
@@ -189,8 +189,8 @@ async def registration_for_admin(create_user:CreateAdmin, db_session: Session = 
 	if create_user.password == "" :
 		raise bad_request("รหัสผ่านว่างเปล่า")
 
-	#if create_user.admin_verify_password != ADMIN_PASSWORD_PROOF :
-	#	raise bad_request("รหัสเฉพาะ Admin ไม่ถูกต้อง")
+	if create_user.admin_verify_password != ADMIN_PASSWORD_PROOF :
+		raise bad_request("รหัสเฉพาะ Admin ไม่ถูกต้อง")
 
 	email_already = db_session.query(database.models.User).filter(database.models.User.email == create_user.email).first()
 	if email_already is not None :
