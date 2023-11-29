@@ -15,7 +15,7 @@ class User(Base):
 	is_active = Column(Boolean, default=False)
 	is_admin = Column(Boolean, default=False)
 
-	my_items = relationship("TaskRecord", back_populates="owner")
+	my_items = relationship("Item", back_populates="owner")
 
 class Item(Base):
 	__tablename__ = "items"
