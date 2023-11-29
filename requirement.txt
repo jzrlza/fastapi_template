@@ -1,0 +1,5 @@
+fastapi
+fastapi_utils
+uvicorn
+selenium
+pydantic
