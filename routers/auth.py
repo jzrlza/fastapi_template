@@ -78,10 +78,10 @@ db.models.Base.metadata.create_all(bind=engine)
 
 def get_db():
 	try:
-		db = SessionLocal()
-		yield db
+		db_session = SessionLocal()
+		yield db_session
 	finally:
-		db.close()
+		db_session.close()
 
 def get_password_hash(password):
 	return bcrypt_context.hash(password)
@@ -89,8 +89,8 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
 	return bcrypt_context.verify(plain_password, hashed_password)
 
-def authenticate_user(email:str, password:str, db):
-	user = db.query(database.models.User).filter(database.models.User.email == email).first()
+def authenticate_user(email:str, password:str, db_session):
+	user = db_session.query(database.models.User).filter(database.models.User.email == email).first()
 
 	if not user:
 		return False
@@ -147,7 +147,7 @@ async def get_current_user(token:str = Depends(oauth2_bearer)):
 		raise user_not_found_exception()
 
 @router.post("/create/user")
-async def registration(create_user:CreateUser, db: Session = Depends(get_db)):
+async def registration(create_user:CreateUser, db_session: Session = Depends(get_db)):
 	if create_user.email == "" :
 		raise bad_request("อีเมลว่างเปล่า")
 
@@ -160,10 +160,10 @@ async def registration(create_user:CreateUser, db: Session = Depends(get_db)):
 	if create_user.confirm_password != create_user.password :
 		raise bad_request("ยืนยันรหัสผ่านไม่ถูกต้อง (ต้องเหมือนกัน)")
 
-	email_already = db.query(database.models.User).filter(database.models.User.email == create_user.email).first()
+	email_already = db_session.query(database.models.User).filter(database.models.User.email == create_user.email).first()
 	if email_already is not None :
 		raise bad_request("อีเมลนี้ถูกใช้งานแล้ว")
-	username_already = db.query(database.models.User).filter(database.models.User.username == create_user.username).first()
+	username_already = db_session.query(database.models.User).filter(database.models.User.username == create_user.username).first()
 	if username_already is not None :
 		raise bad_request("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว")
 
@@ -173,13 +173,13 @@ async def registration(create_user:CreateUser, db: Session = Depends(get_db)):
 	create_user_model.hashed_password = get_password_hash(create_user.password)
 	create_user_model.is_active = True
 	create_user_model.is_admin = False
-	db.add(create_user_model)
-	db.commit()
+	db_session.add(create_user_model)
+	db_session.commit()
 
 	return success_response(200)
 
 @router.post("/create/admin")
-async def registration_for_admin(create_user:CreateAdmin, db: Session = Depends(get_db)):
+async def registration_for_admin(create_user:CreateAdmin, db_session: Session = Depends(get_db)):
 	if create_user.email == "" :
 		raise bad_request("อีเมลว่างเปล่า")
 
@@ -192,10 +192,10 @@ async def registration_for_admin(create_user:CreateAdmin, db: Session = Depends(
 	#if create_user.admin_verify_password != ADMIN_PASSWORD_PROOF :
 	#	raise bad_request("รหัสเฉพาะ Admin ไม่ถูกต้อง")
 
-	email_already = db.query(database.models.User).filter(database.models.User.email == create_user.email).first()
+	email_already = db_session.query(database.models.User).filter(database.models.User.email == create_user.email).first()
 	if email_already is not None :
 		raise bad_request("อีเมลนี้ถูกใช้งานแล้ว")
-	username_already = db.query(database.models.User).filter(database.models.User.username == create_user.username).first()
+	username_already = db_session.query(database.models.User).filter(database.models.User.username == create_user.username).first()
 	if username_already is not None :
 		raise bad_request("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว")
 
@@ -205,19 +205,19 @@ async def registration_for_admin(create_user:CreateAdmin, db: Session = Depends(
 	create_user_model.hashed_password = get_password_hash(create_user.password)
 	create_user_model.is_active = True
 	create_user_model.is_admin = True
-	db.add(create_user_model)
-	db.commit()
+	db_session.add(create_user_model)
+	db_session.commit()
 	return success_response(200)
 
 @router.post("/token")
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = Depends(get_db)):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db_session:Session = Depends(get_db)):
 	if form_data.username == "" :
 		raise bad_request("อีเมลว่างเปล่า")
 
 	if form_data.password == "" :
 		raise bad_request("รหัสผ่านว่างเปล่า")
 
-	user = authenticate_user(form_data.username, form_data.password, db)
+	user = authenticate_user(form_data.username, form_data.password, db_session)
 
 	if not user:
 		raise user_not_found_exception()
