@@ -1,9 +1,9 @@
 const universalBOM = "\uFEFF";
 
 let test_btn = document.getElementById("button__test")
-def postSomething = function() {
+let postSomething = function() {
 	//console.log(input__keyword.value)
-	query = {
+	let query = {
 		"key": "value"
 	}
 	fetch('post_something',{
