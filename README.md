@@ -8,3 +8,9 @@ pip install -r requirement.txt
 
 to run :
 uvicorn main:app
+
+To main web after run :
+localhost:8000/index.html
+
+To access API docs :
+localhost:8000/docs
