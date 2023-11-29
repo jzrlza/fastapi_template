@@ -49,11 +49,11 @@ class EditUser(BaseModel):
 
 @router.get("/all")
 async def get_all_users(user: dict = Depends(get_current_user), db_session: Session = Depends(get_db)):
-	return db_session.query(database.models.User).order_by(database.models.User.id).all()
+	return db_session.query(db.models.User).order_by(db.models.User.id).all()
 
 @router.get("/all/{page_no}")
 async def get_all_users(page_no: int, query_email: str = "", query_username: str = "", user: dict = Depends(get_current_user), db_session: Session = Depends(get_db)):
-	the_user_models = db_session.query(database.models.User).order_by(database.models.User.id).filter(database.models.User.email.like(f'%{query_email}%')).filter(database.models.User.username.like(f'%{query_username}%')).all()
+	the_user_models = db_session.query(db.models.User).order_by(db.models.User.id).filter(db.models.User.email.like(f'%{query_email}%')).filter(db.models.User.username.like(f'%{query_username}%')).all()
 	amount_of_pages = get_pages_amount(the_user_models)
 	sub_set_of_the_user_models = get_sub_set_by_page_no(the_user_models, page_no)
 	return {

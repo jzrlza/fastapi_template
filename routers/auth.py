@@ -160,14 +160,14 @@ async def registration(create_user:CreateUser, db_session: Session = Depends(get
 	if create_user.confirm_password != create_user.password :
 		raise bad_request("ยืนยันรหัสผ่านไม่ถูกต้อง (ต้องเหมือนกัน)")
 
-	email_already = db_session.query(database.models.User).filter(database.models.User.email == create_user.email).first()
+	email_already = db_session.query(db.models.User).filter(db.models.User.email == create_user.email).first()
 	if email_already is not None :
 		raise bad_request("อีเมลนี้ถูกใช้งานแล้ว")
-	username_already = db_session.query(database.models.User).filter(database.models.User.username == create_user.username).first()
+	username_already = db_session.query(db.models.User).filter(db.models.User.username == create_user.username).first()
 	if username_already is not None :
 		raise bad_request("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว")
 
-	create_user_model = database.models.User()
+	create_user_model = db.models.User()
 	create_user_model.email = create_user.email
 	create_user_model.username = create_user.username
 	create_user_model.hashed_password = get_password_hash(create_user.password)
@@ -192,14 +192,14 @@ async def registration_for_admin(create_user:CreateAdmin, db_session: Session = 
 	if create_user.admin_verify_password != ADMIN_PASSWORD_PROOF :
 		raise bad_request("รหัสเฉพาะ Admin ไม่ถูกต้อง")
 
-	email_already = db_session.query(database.models.User).filter(database.models.User.email == create_user.email).first()
+	email_already = db_session.query(db.models.User).filter(db.models.User.email == create_user.email).first()
 	if email_already is not None :
 		raise bad_request("อีเมลนี้ถูกใช้งานแล้ว")
-	username_already = db_session.query(database.models.User).filter(database.models.User.username == create_user.username).first()
+	username_already = db_session.query(db.models.User).filter(db.models.User.username == create_user.username).first()
 	if username_already is not None :
 		raise bad_request("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว")
 
-	create_user_model = database.models.User()
+	create_user_model = db.models.User()
 	create_user_model.email = create_user.email
 	create_user_model.username = create_user.username
 	create_user_model.hashed_password = get_password_hash(create_user.password)
