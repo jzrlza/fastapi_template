@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional
 from .auth import get_current_user, user_not_found_exception, authenticate_user, create_access_token, verify_password, get_password_hash, bad_request, empty_task_response
-#from .tasks import get_pages_amount, get_sub_set_by_page_no
 from datetime import timedelta #auth
 from fastapi.security import OAuth2PasswordRequestForm #auth
 
